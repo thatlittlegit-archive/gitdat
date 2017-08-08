@@ -4,7 +4,8 @@
 		"description": "GitHub on Dat (see datproject.org)",
 		"main": " ",
 		"scripts": {
-				"lint": "xo"
+			"lint": "xo",
+			"build": "webpack"
 		},
 		"author": "thatlittlegit",
 		"license": "MIT",
