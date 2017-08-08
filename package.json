@@ -1,11 +1,17 @@
 {
-  "name": "gitdat",
-  "version": "0.0.0",
-  "description": "GitHub on Dat (see datproject.org)",
-  "main": " ",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "thatlittlegit",
-  "license": "MIT"
+		"name": "gitdat",
+		"version": "0.0.0",
+		"description": "GitHub on Dat (see datproject.org)",
+		"main": " ",
+		"scripts": {
+				"lint": "xo"
+		},
+		"author": "thatlittlegit",
+		"license": "MIT",
+		"devDependencies": {
+				"eslint-config-xo": "^0.18.2",
+				"eslint-plugin-unicorn": "^2.1.2",
+				"webpack": "^3.5.1",
+				"xo": "^0.18.2"
+		}
 }
