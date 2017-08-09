@@ -4,15 +4,23 @@
 		"description": "GitHub on Dat (see datproject.org)",
 		"main": " ",
 		"scripts": {
-			"lint": "xo",
-			"build": "webpack"
+				"lint": "xo",
+				"build": "mkdirp dist && browserify node_modules/debug/src/browser.js > dist/debug.min.js",
+				"start": "http-server . -c0"
 		},
 		"author": "thatlittlegit",
 		"license": "MIT",
 		"devDependencies": {
+				"browserify": "^14.4.0",
 				"eslint-config-xo": "^0.18.2",
 				"eslint-plugin-unicorn": "^2.1.2",
-				"webpack": "^3.5.1",
+				"http-server": "^0.10.0",
+				"mkdirp": "^0.5.1",
+				"request-cli": "^1.0.0",
+				"uglify-js": "^3.0.27",
 				"xo": "^0.18.2"
+		},
+		"dependencies": {
+				"debug": "^3.0.0"
 		}
 }

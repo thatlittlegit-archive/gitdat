@@ -10,3 +10,6 @@ extends:
   - 'xo/browser'
   - 'xo/esnext'
   - 'plugin:unicorn/recommended'
+
+globals:
+  'requirejs': true
