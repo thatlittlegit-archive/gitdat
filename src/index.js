@@ -13,35 +13,7 @@ requirejs.config({
 });
 
 const libs = {};
-// eslint-disable-next-line prefer-const
-let mainFunction;
-
-requirejs(['zepto', 'debug', 'ee2', 'h'], ($, debug, EventEmitter, h) => {
-	libs.$ = $;
-	libs.Zepto = libs.$;
-	libs.debug = debug;
-	libs.ee = new EventEmitter({
-		wildcard: true
-	});
-	libs.h = h;
-
-	const preinitDebug = libs.debug('preinit');
-	const eventDebug = libs.debug('event');
-
-	preinitDebug('Libs initialized', libs);
-
-	libs.ee.on('domReady', mainFunction);
-	libs.ee.prependAny(event => {
-		eventDebug(event);
-	});
-
-	libs.$(document).ready(() => {
-		preinitDebug('DOM is ready, loading main');
-		libs.ee.emit('domReady');
-	});
-});
-
-mainFunction = () => {
+const mainFunction = () => {
 	(libs.debug ? libs.debug('init') : console.log)('Checking for libs');
 
 	if (!(libs.$ || libs.Zepto) || !libs.debug || !libs.ee || !libs.h) {
@@ -117,3 +89,28 @@ mainFunction = () => {
 			setMain('<h1>Not Found</h1>I\'m lost. Where am i?');
 	}
 };
+
+requirejs(['zepto', 'debug', 'ee2', 'h'], ($, debug, EventEmitter, h) => {
+	libs.$ = $;
+	libs.Zepto = libs.$;
+	libs.debug = debug;
+	libs.ee = new EventEmitter({
+		wildcard: true
+	});
+	libs.h = h;
+
+	const preinitDebug = libs.debug('preinit');
+	const eventDebug = libs.debug('event');
+
+	preinitDebug('Libs initialized', libs);
+
+	libs.ee.on('domReady', mainFunction);
+	libs.ee.prependAny(event => {
+		eventDebug(event);
+	});
+
+	libs.$(document).ready(() => {
+		preinitDebug('DOM is ready, loading main');
+		libs.ee.emit('domReady');
+	});
+});
