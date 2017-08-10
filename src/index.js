@@ -7,11 +7,9 @@ requirejs.config({
 	paths: {
 		zepto: 'https://cdn.jsdelivr.net/npm/zepto@1.2.0/dist/zepto.min',
 		domReady: 'https://cdn.jsdelivr.net/gh/requirejs/domReady@2.0.1/domReady.min',
-		debug: 'https://wzrd.in/standalone/debug@^3.0.0?',
-		bluebird: 'https://cdn.jsdelivr.net/npm/bluebird@3.5.0/js/browser/bluebird.min'
+		debug: 'https://wzrd.in/standalone/debug@^3.0.0?'
 	}
 });
-
 requirejs(['domReady!', 'zepto', 'debug'], (doc, $, debug) => {
 	debug('init')('Checking for $');
 
