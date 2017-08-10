@@ -7,21 +7,23 @@ requirejs.config({
 	paths: {
 		zepto: 'https://cdn.jsdelivr.net/npm/zepto@1.2.0/dist/zepto.min',
 		debug: 'https://wzrd.in/standalone/debug@^3.0.0?',
-		ee2: 'https://wzrd.in/standalone/eventemitter2@^4.1.2?'
+		ee2: 'https://wzrd.in/standalone/eventemitter2@^4.1.2?',
+		h: 'https://wzrd.in/standalone/h@~0.1.0?'
 	}
 });
 
 const libs = {};
-
+// eslint-disable-next-line prefer-const
 let mainFunction;
 
-requirejs(['zepto', 'debug', 'ee2'], ($, debug, EventEmitter) => {
+requirejs(['zepto', 'debug', 'ee2', 'h'], ($, debug, EventEmitter, h) => {
 	libs.$ = $;
 	libs.Zepto = libs.$;
 	libs.debug = debug;
 	libs.ee = new EventEmitter({
 		wildcard: true
 	});
+	libs.h = h;
 
 	const preinitDebug = libs.debug('preinit');
 	const eventDebug = libs.debug('event');
@@ -42,10 +44,25 @@ requirejs(['zepto', 'debug', 'ee2'], ($, debug, EventEmitter) => {
 mainFunction = () => {
 	(libs.debug ? libs.debug('init') : console.log)('Checking for libs');
 
-	if (!(libs.$ || libs.Zepto) || !libs.debug || !libs.ee) {
-		document.getElementById('main').innerHTML = '<div class="alert alert-danger"><strong><i class="glyphicon glyphicon-fire"></i>Something bad happened!</strong> A variable was not defined (libs = <code>' + libs + '</code>)</div>';
+	if (!(libs.$ || libs.Zepto) || !libs.debug || !libs.ee || !libs.h) {
+		document.getElementById('main').innerHTML = '';
+		if (libs.h) {
+			const h = libs.h;
+			document.getElementById('main').appendChild(
+				h('div.alert.alert-danger',
+					h('strong',
+						h('i.glyphicon.glyphicon-fire'),
+						'Something bad happened!'),
+					'A variable was not defined (libs =',
+					h('code',
+						libs),
+					')'));
+		} else {
+			document.getElementById('main').innerHTML = '<div class="alert alert-danger"><strong><i class="glyphicon glyphicon-fire"></i>Something bad happened!</strong> A variable was not defined (libs = <code>' + libs + '</code>)</div>';
+		}
 	}
-	// Debug doesn't need to be silent. Set debug to true.
+
+	// Debug doesn't need to be silent. Set debug to true if it isn't already and reload.
 	if (!localStorage.debug) {
 		localStorage.debug = '*';
 		location.href += '#';
@@ -64,7 +81,7 @@ mainFunction = () => {
 	initDebug('Declaring site-gen function...');
 
 	function getPage(rawUrl, callback) {
-		const fetchDebug = debug('fetch');
+		const fetchDebug = libs.debug('fetch');
 		const url = location.pathname.substring(0, location.pathname.lastIndexOf('/')) + '/' + rawUrl;
 		const requestId = Math.random().toString().split('.')[0];
 		fetchDebug('Fetching', url, 'RequestID is', requestId);
@@ -99,4 +116,4 @@ mainFunction = () => {
 			initDebug('Not Found on request to ' + location.href.split('?')[1]);
 			setMain('<h1>Not Found</h1>I\'m lost. Where am i?');
 	}
-}
+};
