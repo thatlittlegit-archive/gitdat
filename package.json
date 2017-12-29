@@ -1,6 +1,6 @@
 {
-		"name": "gitdat",
-		"version": "0.1.2",
+		"name": "@thatlittlegit/gitdat",
+		"version": "0.1.3",
 		"description": "GitHub on Dat (see datproject.org)",
 		"main": " ",
 		"scripts": {

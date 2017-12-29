@@ -1,4 +1,9 @@
 # GitDat
-GitHub for the Dat network.
+## ABANDONED
+I abandoned this project because I couldn't figure out how to do authentication.
 
-#### (this project is currently incomplete, and may never be completed. if you want the package name, ask me at [wapidstyle@live.ca](mailto:wapidstyle@live.ca).
+#### Ideas for continuing
+Keep It Simple Stupid: I did a single-page app in one file - it's a mess.  
+Use no authentication
+<hr />
+GitHub for the Dat network.
