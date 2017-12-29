@@ -6,33 +6,17 @@ requirejs.config({
 	baseurl: '.',
 	paths: {
 		zepto: 'https://cdn.jsdelivr.net/npm/zepto@1.2.0/dist/zepto.min',
-		debug: 'https://wzrd.in/standalone/debug@^3.0.0?',
-		ee2: 'https://wzrd.in/standalone/eventemitter2@^4.1.2?',
-		h: 'https://wzrd.in/standalone/h@~0.1.0?'
+		debug: 'https://wzrd.in/standalone/debug@3.0.0?',
+		ee2: 'https://wzrd.in/standalone/eventemitter2@4.1.2?',
+		h: 'https://wzrd.in/standalone/h@~0.1.0?',
+		remoteStorage: 'https://cdnjs.cloudflare.com/ajax/libs/remoteStorage/0.14.0/remotestorage.amd'
 	}
 });
 
 const libs = {};
 const mainFunction = () => {
-	(libs.debug ? libs.debug('init') : console.log)('Checking for libs');
-
-	if (!(libs.$ || libs.Zepto) || !libs.debug || !libs.ee || !libs.h) {
-		document.getElementById('main').innerHTML = '';
-		if (libs.h) {
-			const h = libs.h;
-			document.getElementById('main').appendChild(
-				h('div.alert.alert-danger',
-					h('strong',
-						h('i.glyphicon.glyphicon-fire'),
-						'Something bad happened!'),
-					'A variable was not defined (libs =',
-					h('code',
-						libs),
-					')'));
-		} else {
-			document.getElementById('main').innerHTML = '<div class="alert alert-danger"><strong><i class="glyphicon glyphicon-fire"></i>Something bad happened!</strong> A variable was not defined (libs = <code>' + libs + '</code>)</div>';
-		}
-	}
+	const initDebug = libs.debug('init');
+	const $ = libs.$;
 
 	// Debug doesn't need to be silent. Set debug to true if it isn't already and reload.
 	if (!localStorage.debug) {
@@ -40,10 +24,7 @@ const mainFunction = () => {
 		location.href += '#';
 	}
 
-	const initDebug = libs.debug('init');
-	const $ = libs.$;
-
-	initDebug('Done that, loading gitDat!');
+	initDebug('Loading gitDat!');
 
 	if (location.href.endsWith('#')) {
 		initDebug('The URL ends with #. The world is going to die.');
@@ -79,6 +60,11 @@ const mainFunction = () => {
 			initDebug('Found homepage, loading it!');
 			getPage('pages/home.html', setMain);
 			break;
+		case 'page=login':
+			initDebug('Found loginpage, loading it!');
+			getPage('pages/login.html', setMain);
+			libs.ee.emit('login.begin');
+			break;
 		case '':
 		case undefined:
 			location.href += '?page=home';
@@ -90,27 +76,57 @@ const mainFunction = () => {
 	}
 };
 
-requirejs(['zepto', 'debug', 'ee2', 'h'], ($, debug, EventEmitter, h) => {
-	libs.$ = $;
-	libs.Zepto = libs.$;
-	libs.debug = debug;
-	libs.ee = new EventEmitter({
-		wildcard: true
-	});
-	libs.h = h;
+function loginInitiate() {
 
-	const preinitDebug = libs.debug('preinit');
-	const eventDebug = libs.debug('event');
+}
 
-	preinitDebug('Libs initialized', libs);
+// eslint-disable-next-line max-params
+requirejs(['zepto', 'debug', 'ee2', 'h', 'remoteStorage'], ($, debug, EventEmitter, h, remoteStorage) => {
+	try {
+		libs.$ = $;
+		libs.Zepto = libs.$;
+		libs.remoteStorage = remoteStorage; // This used to be at the bottom of the libs.*, but it broke the site? This is a quickfix.
+		libs.debug = debug;
+		libs.ee = new EventEmitter({
+			wildcard: true
+		});
+		libs.h = h;
 
-	libs.ee.on('domReady', mainFunction);
-	libs.ee.prependAny(event => {
-		eventDebug(event);
-	});
+		if (!(libs.$ || libs.Zepto) || !libs.debug || !libs.ee || !libs.h) {
+			document.getElementById('main').innerHTML = '';
+			if (libs.h) {
+				const h = libs.h;
+				document.getElementById('main').appendChild(
+					h('div.alert.alert-danger',
+						h('strong',
+							h('i.glyphicon.glyphicon-fire'),
+							'Something bad happened!'),
+						'A variable was not defined (libs =',
+						h('code',
+							libs),
+						')'));
+			} else {
+				document.getElementById('main').innerHTML = '<div class="alert alert-danger"><strong><i class="glyphicon glyphicon-fire"></i>Something bad happened!</strong> A variable was not defined (libs = <code>' + libs + '</code>)</div>';
+			}
+		}
 
-	libs.$(document).ready(() => {
-		preinitDebug('DOM is ready, loading main');
-		libs.ee.emit('domReady');
-	});
+		const preinitDebug = libs.debug('preinit');
+		const eventDebug = libs.debug('event');
+
+		preinitDebug('Libs initialized', libs);
+
+		libs.ee.on('domReady', mainFunction);
+		libs.ee.on('login.begin', loginInitiate);
+		libs.ee.prependAny(event => {
+			eventDebug(event);
+		});
+
+		libs.$(document).ready(() => {
+			preinitDebug('DOM is ready, loading main');
+			libs.ee.emit('domReady');
+		});
+	} catch (err) {
+		console.log(err, this);
+		document.getElementById('main').innerHTML = '<div class="alert alert-danger"><strong><i class="glyphicon glyphicon-fire"></i>Something bad happened!</strong> An error was thrown in preinit (err = <code>' + err + '</code>)</div>';
+	}
 });
